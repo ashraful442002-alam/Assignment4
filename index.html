@@ -17,6 +17,12 @@
   
   <style>
     * { font-family: "Geist", sans-serif; }
+  
+  .tab-btn.active {
+    background-color: #3b82f6; 
+    color: white;
+  }
+
   </style>
 </head>
 <body class="bg-gray-100 p-6">
@@ -57,13 +63,13 @@
 
   <!-- Filter Buttons -->
   <div class="flex gap-3 mb-6">
-    <button id="allTab" class="px-4 py-2 bg-white text-[#64748B] rounded-lg hover:bg-blue-500 hover:text-white transition">
+    <button id="allTab" class="tab-btn px-4 py-2 bg-white text-[#64748B] rounded-lg hover:bg-blue-500 hover:text-white transition">
       All
     </button>
-    <button id="interviewTab" class="px-4 py-2 bg-white text-[#64748B] rounded-lg hover:bg-blue-500 hover:text-white transition">
+    <button id="interviewTab" class="tab-btn px-4 py-2 bg-white text-[#64748B] rounded-lg hover:bg-blue-500 hover:text-white transition">
       Interview
     </button>
-    <button id="rejectedTab" class="px-4 py-2 bg-white text-[#64748B] rounded-lg hover:bg-blue-500 hover:text-white transition">
+    <button id="rejectedTab" class="tab-btn px-4 py-2 bg-white text-[#64748B] rounded-lg hover:bg-blue-500 hover:text-white transition">
       Rejected
     </button>
   </div>
@@ -218,6 +224,109 @@
 
   </div>
 
+  
+   <script>
+
+    
+    const jobContainer   = document.getElementById("jobContainer");
+    const totalCount     = document.getElementById("totalCount");
+    const interviewCount = document.getElementById("interviewCount");
+    const rejectedCount  = document.getElementById("rejectedCount");
+    const availableCount = document.getElementById("availableCount");
+
+    // Event delegation for all clicks inside jobContainer
+    jobContainer.addEventListener("click", (e) => {
+      const card = e.target.closest(".job-card");
+      if (!card) return;
+
+      if (e.target.classList.contains("interview-btn")) {
+        card.dataset.status = "interview";
+        updateCounts();
+      }
+
+      if (e.target.classList.contains("rejected-btn")) {
+        card.dataset.status = "rejected";
+        updateCounts();
+      }
+
+      if (e.target.closest(".delete-btn")) {
+        card.remove();
+        updateCounts();
+      }
+    });
+
+    function updateCounts() {
+      const allCards    = document.querySelectorAll(".job-card");
+      const interview   = document.querySelectorAll('.job-card[data-status="interview"]');
+      const rejected    = document.querySelectorAll('.job-card[data-status="rejected"]');
+
+      const total     = allCards.length;
+      const intCount  = interview.length;
+      const rejCount  = rejected.length;
+
+      totalCount.innerText     = total;
+      interviewCount.innerText = intCount;
+      rejectedCount.innerText  = rejCount;
+      availableCount.innerText = total;
+    }
+
+    // Tab filtering
+    document.getElementById("allTab").onclick      = () => filterJobs("all");
+    document.getElementById("interviewTab").onclick = () => filterJobs("interview");
+    document.getElementById("rejectedTab").onclick  = () => filterJobs("rejected");
+
+    function filterJobs(type) {
+      const cards = document.querySelectorAll(".job-card");
+      let visible = 0;
+
+      cards.forEach(card => {
+        if (type === "all") {
+          card.style.display = "flex";
+          visible++;
+        } else if (card.dataset.status === type) {
+          card.style.display = "flex";
+          visible++;
+        } else {
+          card.style.display = "none";
+        }
+      });
+
+      showEmptyMessage(visible);
+    }
+
+    function showEmptyMessage(count) {
+      let msg = document.getElementById("emptyMsg");
+
+      if (count === 0) {
+        if (!msg) {
+          msg = document.createElement("div");
+          msg.id = "emptyMsg";
+          msg.className = "text-center text-gray-500 mt-10";
+          msg.innerHTML = `
+            <i class="fa-solid fa-face-sad-tear text-4xl mb-3"></i>
+            <p class="text-lg font-semibold">No Jobs Available</p>
+            <p class="text-sm">Try another category</p>
+          `;
+          jobContainer.appendChild(msg);
+        }
+      } else {
+        if (msg) msg.remove();
+      }
+    }
+
+    // filter-button hover effect setting
+  
+const tabButtons = document.querySelectorAll('.tab-btn');
+
+tabButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    tabButtons.forEach(b => b.classList.remove('active'));
+    
+    btn.classList.add('active');
+  });
+});
+    
+  </script>  
 
  
   
